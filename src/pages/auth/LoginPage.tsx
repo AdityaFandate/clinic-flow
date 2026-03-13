@@ -155,7 +155,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="doctor@clinicos.in"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -184,8 +184,8 @@ export default function LoginPage() {
                       type="button"
                       onClick={() => setSelectedRole(r.value)}
                       className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${selectedRole === r.value
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-card text-muted-foreground border-border hover:border-primary/50'
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-card text-muted-foreground border-border hover:border-primary/50'
                         }`}
                     >
                       {r.label}
@@ -235,12 +235,7 @@ export default function LoginPage() {
                 Sign in with Google
               </Button>
 
-              <p className="text-center text-sm text-muted-foreground">
-                Don't have an account?{' '}
-                <button type="button" className="text-primary font-medium hover:underline">
-                  Contact your clinic admin
-                </button>
-              </p>
+
             </form>
           </CardContent>
         </Card>
