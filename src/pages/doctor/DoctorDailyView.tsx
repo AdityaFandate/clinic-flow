@@ -1,50 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
-import { useAuthStore } from '@/stores/authStore';
-import type { Appointment } from '@/types';
+import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AppointmentCard } from '@/components/shared/AppointmentCard';
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { mockAppointments } from '@/lib/mock-data';
 import { List, Clock } from 'lucide-react';
 
 export default function DoctorDailyView() {
-  const location = useLocation();
-  const { user } = useAuthStore();
-  const userId = location.state?.userId || user?.id; // Fallback to auth store if state is missing
-
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [view, setView] = useState<'list' | 'timeline'>('timeline');
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchAppointments = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('appointments')
-        .select(`
-          *,
-          patient:patients(profile:profiles(*)),
-          time_slot:time_slots(*)
-        `)
-        .eq('doctor_id', userId);
-
-      if (error) {
-        console.error('Error fetching appointments:', error);
-      } else if (data) {
-        setAppointments(data as any as Appointment[]);
-      }
-      setLoading(false);
-    };
-
-    fetchAppointments();
-  }, [userId, selectedDate]); // Optionally filter by selectedDate if needed later
 
   const timelineHours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
 
@@ -91,20 +57,14 @@ export default function DoctorDailyView() {
           <div>
             {view === 'list' ? (
               <div className="space-y-3">
-                {loading ? (
-                  <p className="text-sm text-muted-foreground">Loading appointments...</p>
-                ) : appointments.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No appointments found.</p>
-                ) : (
-                  appointments.map(a => (
-                    <AppointmentCard key={a.id} appointment={a} />
-                  ))
-                )}
+                {mockAppointments.map(a => (
+                  <AppointmentCard key={a.id} appointment={a} />
+                ))}
               </div>
             ) : (
               <div className="space-y-0">
                 {timelineHours.map(hour => {
-                  const hourAppts = appointments.filter(
+                  const hourAppts = mockAppointments.filter(
                     a => a.time_slot?.start_time?.startsWith(hour.split(':')[0])
                   );
                   return (

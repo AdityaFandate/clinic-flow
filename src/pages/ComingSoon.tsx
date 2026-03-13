@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,17 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User, Mail, Phone, MapPin, Edit, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAuthStore } from '@/stores/authStore';
 
 export default function ComingSoon() {
-  const { profile: authProfile, user, setProfile: setAuthProfile } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
-  
-  // Dummy data representing user profile mixed with global state
+
+  // Dummy data representing user profile
   const [profile, setProfile] = useState({
-    username: authProfile?.full_name || 'Dr. Rahul Sharma',
-    email: user?.email || 'dr.rahul@clinicflow.com',
-    phone: authProfile?.phone || '+91 98765 43210',
+    username: 'Dr. Rahul Sharma',
+    email: 'dr.rahul@clinicflow.com',
+    phone: '+91 98765 43210',
     specialty: 'Cardiologist',
     address: '123 Health Ave, Medical District, Mumbai',
     bio: 'Experienced cardiologist with 15+ years of practice.'
@@ -25,34 +23,8 @@ export default function ComingSoon() {
   // State to hold edit form data
   const [editForm, setEditForm] = useState({ ...profile });
 
-  useEffect(() => {
-    // Keep local form in sync if external auth state changes
-    setProfile(prev => ({
-      ...prev,
-      username: authProfile?.full_name || prev.username,
-      email: user?.email || prev.email,
-      phone: authProfile?.phone || prev.phone,
-    }));
-    setEditForm(prev => ({
-      ...prev,
-      username: authProfile?.full_name || prev.username,
-      email: user?.email || prev.email,
-      phone: authProfile?.phone || prev.phone,
-    }));
-  }, [authProfile, user]);
-
   const handleSave = () => {
     setProfile(editForm);
-    
-    // Sync changes to global authStore so Navbar updates
-    if (authProfile) {
-      setAuthProfile({
-        ...authProfile,
-        full_name: editForm.username,
-        phone: editForm.phone,
-      });
-    }
-    
     setIsEditing(false);
     toast.success('Profile updated successfully!');
   };
@@ -93,52 +65,52 @@ export default function ComingSoon() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="username">Full Name</Label>
-                    <Input 
-                      id="username" 
-                      value={editForm.username} 
-                      onChange={(e) => setEditForm({...editForm, username: e.target.value})} 
+                    <Input
+                      id="username"
+                      value={editForm.username}
+                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="specialty">Specialty</Label>
-                    <Input 
-                      id="specialty" 
-                      value={editForm.specialty} 
-                      onChange={(e) => setEditForm({...editForm, specialty: e.target.value})} 
+                    <Input
+                      id="specialty"
+                      value={editForm.specialty}
+                      onChange={(e) => setEditForm({ ...editForm, specialty: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input 
-                      id="email" 
+                    <Input
+                      id="email"
                       type="email"
-                      value={editForm.email} 
-                      onChange={(e) => setEditForm({...editForm, email: e.target.value})} 
+                      value={editForm.email}
+                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input 
-                      id="phone" 
-                      value={editForm.phone} 
-                      onChange={(e) => setEditForm({...editForm, phone: e.target.value})} 
+                    <Input
+                      id="phone"
+                      value={editForm.phone}
+                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="address">Clinic Address</Label>
-                  <Input 
-                    id="address" 
-                    value={editForm.address} 
-                    onChange={(e) => setEditForm({...editForm, address: e.target.value})} 
+                  <Input
+                    id="address"
+                    value={editForm.address}
+                    onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="bio">Professional Bio</Label>
-                  <Input 
-                    id="bio" 
-                    value={editForm.bio} 
-                    onChange={(e) => setEditForm({...editForm, bio: e.target.value})} 
+                  <Input
+                    id="bio"
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
                   />
                 </div>
                 <div className="flex justify-end gap-3 pt-4 border-t">
