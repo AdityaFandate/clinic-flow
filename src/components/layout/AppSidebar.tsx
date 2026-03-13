@@ -35,18 +35,8 @@ const navByRole: Record<string, NavItem[]> = {
     { label: 'Daily View', href: '/doctor/daily-view', icon: LayoutDashboard },
     { label: 'Patients', href: '/doctor/patients', icon: Users },
     { label: 'Schedule', href: '/doctor/schedule', icon: Clock },
-    { label: 'Prescriptions', href: '/doctor/prescriptions', icon: FileText },
+    { label: 'Write Prescription', href: '/doctor/prescriptions', icon: FileText },
     { label: 'Settings', href: '/doctor/settings', icon: Settings },
-  ],
-  admin: [
-    { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-    { label: 'Doctors', href: '/admin/doctors', icon: Stethoscope },
-    { label: 'Staff', href: '/admin/staff', icon: UserCog },
-    { label: 'Patients', href: '/admin/patients', icon: Users },
-    { label: 'Appointments', href: '/admin/appointments', icon: Calendar },
-    { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-    { label: 'Logs', href: '/admin/logs', icon: Activity },
-    { label: 'Settings', href: '/admin/settings', icon: Settings },
   ],
 };
 
