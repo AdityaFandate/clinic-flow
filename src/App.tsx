@@ -20,6 +20,7 @@ import DoctorDailyView from "@/pages/doctor/DoctorDailyView";
 import PatientProfile from "@/pages/doctor/PatientProfile";
 import WritePrescription from "@/pages/doctor/WritePrescription";
 import SchedulePage from "@/pages/shared/SchedulePage";
+import PatientPrescriptions from "@/pages/patient/PatientPrescriptions";
 import ComingSoon from "@/pages/ComingSoon";
 import NotFound from "@/pages/NotFound";
 
@@ -104,7 +105,7 @@ const App = () => {
             <Route path="/patient/dashboard" element={<ProtectedRoute allowedRoles={['patient']}><PatientDashboard /></ProtectedRoute>} />
             <Route path="/patient/book" element={<ProtectedRoute allowedRoles={['patient']}><BookAppointment /></ProtectedRoute>} />
             <Route path="/patient/appointments" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
-            <Route path="/patient/prescriptions" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
+            <Route path="/patient/prescriptions" element={<ProtectedRoute allowedRoles={['patient']}><PatientPrescriptions /></ProtectedRoute>} />
             <Route path="/patient/settings" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
 
             {/* Receptionist */}
