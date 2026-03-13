@@ -7,9 +7,9 @@ export const mockDoctors: Doctor[] = [
 ];
 
 export const mockPatients: Patient[] = [
-  { id: '1', user_id: 'pt1', age: 34, gender: 'Male', blood_group: 'O+', profile: { id: 'pp1', user_id: 'pt1', full_name: 'Amit Kumar', phone: '+91 91234 56780', language_pref: 'hindi', created_at: '2024-01-15' } },
-  { id: '2', user_id: 'pt2', age: 28, gender: 'Female', blood_group: 'A+', profile: { id: 'pp2', user_id: 'pt2', full_name: 'Sneha Reddy', phone: '+91 91234 56781', language_pref: 'english', created_at: '2024-02-01' } },
-  { id: '3', user_id: 'pt3', age: 45, gender: 'Male', blood_group: 'B+', profile: { id: 'pp3', user_id: 'pt3', full_name: 'Vikram Singh', phone: '+91 91234 56782', language_pref: 'english', created_at: '2024-03-10' } },
+  { id: '1', user_id: 'pt1', age: 34, gender: 'Male', blood_group: 'O+', profile: { id: 'pp1', user_id: 'pt1', full_name: 'Amit Kumar', phone: '+91 72495 74658', language_pref: 'hindi', created_at: '2024-01-15' } },
+  { id: '2', user_id: 'pt2', age: 28, gender: 'Female', blood_group: 'A+', profile: { id: 'pp2', user_id: 'pt2', full_name: 'Sneha Reddy', phone: '+91 72495 74658', language_pref: 'english', created_at: '2024-02-01' } },
+  { id: '3', user_id: 'pt3', age: 45, gender: 'Male', blood_group: 'B+', profile: { id: 'pp3', user_id: 'pt3', full_name: 'Vikram Singh', phone: '+91 72495 74658', language_pref: 'english', created_at: '2024-03-10' } },
 ];
 
 export const mockTimeSlots: TimeSlot[] = [

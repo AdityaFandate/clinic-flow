@@ -7,11 +7,14 @@ import { useEffect } from "react";
 import { VoiceAssistantWidget } from "@/components/shared/VoiceAssistantWidget";
 import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "./lib/supabase";
+import type { AppRole } from "@/types";
 
 import LoginPage from "@/pages/auth/LoginPage";
 import PatientDashboard from "@/pages/patient/PatientDashboard";
 import BookAppointment from "@/pages/patient/BookAppointment";
 import ReceptionistDashboard from "@/pages/receptionist/ReceptionistDashboard";
+import ReceptionistAppointments from "@/pages/receptionist/ReceptionistAppointments";
+import ReceptionistPatients from "@/pages/receptionist/ReceptionistPatients";
 import ReminderManagement from "@/pages/receptionist/ReminderManagement";
 import DoctorDailyView from "@/pages/doctor/DoctorDailyView";
 import PatientProfile from "@/pages/doctor/PatientProfile";
@@ -38,6 +41,20 @@ function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode;
   return <>{children}</>;
 }
 
+const HomeRedirect = () => {
+  const { isAuthenticated, role, isLoading } = useAuthStore();
+  if (isLoading) return null;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  
+  const roleRedirects: Record<string, string> = {
+    patient: '/patient/dashboard',
+    receptionist: '/receptionist/dashboard',
+    doctor: '/doctor/daily-view',
+  };
+  
+  return <Navigate to={roleRedirects[role || 'patient']} replace />;
+};
+
 const App = () => {
   const { setUser, setRole, setLoading } = useAuthStore();
 
@@ -51,8 +68,6 @@ const App = () => {
         const savedRole = localStorage.getItem('clinicos_pending_role') as AppRole;
         if (savedRole) {
           setRole(savedRole);
-          // Optional: clear it after restoration
-          // localStorage.removeItem('clinicos_pending_role');
         }
       }
       setLoading(false);
@@ -76,47 +91,46 @@ const App = () => {
   }, [setUser, setRole, setLoading]);
 
   return (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<LoginPage />} />
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomeRedirect />} />
+            <Route path="/login" element={<LoginPage />} />
 
+            {/* Patient */}
+            <Route path="/patient/dashboard" element={<ProtectedRoute allowedRoles={['patient']}><PatientDashboard /></ProtectedRoute>} />
+            <Route path="/patient/book" element={<ProtectedRoute allowedRoles={['patient']}><BookAppointment /></ProtectedRoute>} />
+            <Route path="/patient/appointments" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
+            <Route path="/patient/prescriptions" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
+            <Route path="/patient/settings" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
 
-          {/* Patient */}
-          <Route path="/patient/dashboard" element={<ProtectedRoute allowedRoles={['patient']}><PatientDashboard /></ProtectedRoute>} />
-          <Route path="/patient/book" element={<ProtectedRoute allowedRoles={['patient']}><BookAppointment /></ProtectedRoute>} />
-          <Route path="/patient/appointments" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
-          <Route path="/patient/prescriptions" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
-          <Route path="/patient/settings" element={<ProtectedRoute allowedRoles={['patient']}><ComingSoon /></ProtectedRoute>} />
+            {/* Receptionist */}
+            <Route path="/receptionist/dashboard" element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistDashboard /></ProtectedRoute>} />
+            <Route path="/receptionist/quick-book" element={<ProtectedRoute allowedRoles={['receptionist']}><BookAppointment /></ProtectedRoute>} />
+            <Route path="/receptionist/appointments" element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistAppointments /></ProtectedRoute>} />
+            <Route path="/receptionist/patients" element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistPatients /></ProtectedRoute>} />
+            <Route path="/receptionist/schedule" element={<ProtectedRoute allowedRoles={['receptionist']}><SchedulePage /></ProtectedRoute>} />
+            <Route path="/receptionist/reminders" element={<ProtectedRoute allowedRoles={['receptionist']}><ReminderManagement /></ProtectedRoute>} />
+            <Route path="/receptionist/settings" element={<ProtectedRoute allowedRoles={['receptionist']}><ComingSoon /></ProtectedRoute>} />
 
-          {/* Receptionist */}
-          <Route path="/receptionist/dashboard" element={<ProtectedRoute allowedRoles={['receptionist']}><ReceptionistDashboard /></ProtectedRoute>} />
-          <Route path="/receptionist/quick-book" element={<ProtectedRoute allowedRoles={['receptionist']}><BookAppointment /></ProtectedRoute>} />
-          <Route path="/receptionist/appointments" element={<ProtectedRoute allowedRoles={['receptionist']}><ComingSoon /></ProtectedRoute>} />
-          <Route path="/receptionist/patients" element={<ProtectedRoute allowedRoles={['receptionist']}><ComingSoon /></ProtectedRoute>} />
-          <Route path="/receptionist/schedule" element={<ProtectedRoute allowedRoles={['receptionist']}><SchedulePage /></ProtectedRoute>} />
-          <Route path="/receptionist/reminders" element={<ProtectedRoute allowedRoles={['receptionist']}><ReminderManagement /></ProtectedRoute>} />
-          <Route path="/receptionist/settings" element={<ProtectedRoute allowedRoles={['receptionist']}><ComingSoon /></ProtectedRoute>} />
+            {/* Doctor */}
+            <Route path="/doctor/daily-view" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDailyView /></ProtectedRoute>} />
+            <Route path="/doctor/patients/:id" element={<ProtectedRoute allowedRoles={['doctor']}><PatientProfile /></ProtectedRoute>} />
+            <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={['doctor']}><PatientProfile /></ProtectedRoute>} />
+            <Route path="/doctor/schedule" element={<ProtectedRoute allowedRoles={['doctor']}><SchedulePage /></ProtectedRoute>} />
+            <Route path="/doctor/prescriptions" element={<ProtectedRoute allowedRoles={['doctor']}><WritePrescription /></ProtectedRoute>} />
+            <Route path="/doctor/settings" element={<ProtectedRoute allowedRoles={['doctor']}><ComingSoon /></ProtectedRoute>} />
 
-          {/* Doctor */}
-          <Route path="/doctor/daily-view" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDailyView /></ProtectedRoute>} />
-          <Route path="/doctor/patients/:id" element={<ProtectedRoute allowedRoles={['doctor']}><PatientProfile /></ProtectedRoute>} />
-          <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={['doctor']}><PatientProfile /></ProtectedRoute>} />
-          <Route path="/doctor/schedule" element={<ProtectedRoute allowedRoles={['doctor']}><SchedulePage /></ProtectedRoute>} />
-          <Route path="/doctor/prescriptions" element={<ProtectedRoute allowedRoles={['doctor']}><WritePrescription /></ProtectedRoute>} />
-          <Route path="/doctor/settings" element={<ProtectedRoute allowedRoles={['doctor']}><ComingSoon /></ProtectedRoute>} />
-
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <VoiceAssistantWidgetWrapper />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <VoiceAssistantWidgetWrapper />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
 };
 
 function VoiceAssistantWidgetWrapper() {

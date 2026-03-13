@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // NOTE: In the browser app, the key comes from VITE_GEMINI_API_KEY in .env.
 // This test script uses the key directly for quick CLI testing.
-const apiKey = "AIzaSyCARNVztD2vzAnuxGh_zYCidOa-uBWUrrg";
+const apiKey = "AIzaSyD7beI1xtRbvr5X_VxcFY0OCUgKzd1kWT4";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 async function run() {

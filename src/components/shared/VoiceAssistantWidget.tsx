@@ -60,6 +60,15 @@ export function VoiceAssistantWidget() {
       const result = await getGeminiResponse(text, '', language);
       setAiResponse(result.response);
       
+      // ── Voice Action Dispatch ──
+      // If Gemini detected a booking/cancel/reschedule intent, dispatch a custom event
+      if (result.action && result.action.type) {
+        console.log('[VoiceAssistant] Action detected:', result.action);
+        window.dispatchEvent(new CustomEvent('clinic:voice-action', {
+          detail: result.action,
+        }));
+      }
+
       // Auto-update language if detected (and it's not an error)
       if (result.language && ['english', 'hindi', 'marathi'].includes(result.language.toLowerCase())) {
         const detectedLang = result.language.toLowerCase() as Language;

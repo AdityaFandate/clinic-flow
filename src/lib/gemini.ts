@@ -72,8 +72,23 @@ ${langHint}
 Return ONLY a valid JSON object:
 {
   "language": "english" | "hindi" | "marathi",
-  "response": "your spoken response here"
+  "response": "your spoken response here",
+  "action": null | {
+    "type": "book_appointment" | "cancel_appointment" | "reschedule_appointment",
+    "patient_name": "extracted patient name or null",
+    "doctor_name": "extracted doctor name or null",
+    "reason": "extracted reason or null",
+    "time": "extracted time or null"
+  }
 }
+
+**Action rules:**
+- Set "action" ONLY when the user clearly wants to book/cancel/reschedule and has provided enough info (at least their intent).
+- For booking: extract patient name, doctor, reason, and time if mentioned. Set type to "book_appointment".
+- For cancellation: set type to "cancel_appointment".
+- For rescheduling: set type to "reschedule_appointment".
+- If the user is just chatting, greeting, or asking questions, set action to null.
+- Always provide a conversational "response" regardless of whether action is set.
 `;
 
     // Current Gemini models, ordered by cost/speed (cheapest first for free tier)
