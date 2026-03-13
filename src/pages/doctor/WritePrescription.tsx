@@ -7,6 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, Send, HeartPulse } from 'lucide-react';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription, DialogHeader } from '@/components/ui/dialog';
+import { PDFViewer } from '@react-pdf/renderer';
+import { PrescriptionPDF } from '@/components/pdf/PrescriptionPDF';
 
 interface Medicine {
   name: string;
@@ -19,6 +22,8 @@ export default function WritePrescription() {
   const [patientName, setPatientName] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
   const [medicines, setMedicines] = useState<Medicine[]>([{ name: '', dosage: '', frequency: '', duration: '' }]);
+  const [instructions, setInstructions] = useState('');
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const addMedicine = () => {
     setMedicines([...medicines, { name: '', dosage: '', frequency: '', duration: '' }]);
@@ -41,6 +46,7 @@ export default function WritePrescription() {
     setPatientName('');
     setDiagnosis('');
     setMedicines([{ name: '', dosage: '', frequency: '', duration: '' }]);
+    setInstructions('');
   };
 
   return (
@@ -154,12 +160,45 @@ export default function WritePrescription() {
               <CardTitle className="text-lg">Additional Instructions</CardTitle>
             </CardHeader>
             <CardContent>
-              <Textarea placeholder="Any lifestyle changes, next follow-up, etc." className="min-h-[100px]" />
+              <Textarea 
+                placeholder="Any lifestyle changes, next follow-up, etc." 
+                className="min-h-[100px]" 
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+              />
             </CardContent>
           </Card>
 
           <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline">Preview</Button>
+            <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+              <DialogTrigger asChild>
+                <Button type="button" variant="outline">Preview</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] h-[80vh] flex flex-col">
+                <DialogHeader>
+                  <DialogTitle>Prescription Preview</DialogTitle>
+                  <DialogDescription>Review the generated PDF before sending.</DialogDescription>
+                </DialogHeader>
+                <div className="flex-1 w-full bg-slate-100 rounded-md overflow-hidden min-h-[400px]">
+                  {isPreviewOpen && (
+                    <PDFViewer width="100%" height="100%" className="border-0">
+                      <PrescriptionPDF 
+                        data={{
+                          patientName,
+                          diagnosis,
+                          medicines,
+                          instructions,
+                          date: new Date().toLocaleDateString()
+                        }} 
+                      />
+                    </PDFViewer>
+                  )}
+                </div>
+                <div className="flex justify-end pt-4">
+                  <Button type="button" onClick={() => setIsPreviewOpen(false)}>Close Preview</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Button type="submit" className="gap-2">
               <Send className="h-4 w-4" /> Generate & Send
             </Button>

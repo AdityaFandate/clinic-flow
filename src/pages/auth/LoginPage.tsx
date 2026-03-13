@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -34,21 +34,62 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Mock login — replace with Supabase auth
-    setTimeout(() => {
-      setUser({ id: 'mock-user-id', email });
-      setRole(selectedRole);
-      setProfile({
-        id: 'mock-profile',
-        user_id: 'mock-user-id',
-        full_name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-        phone: '+91 98765 43210',
-        language_pref: 'english',
-        created_at: new Date().toISOString(),
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        setUser({ id: authData.user.id, email: authData.user.email || '' });
+        
+        // Fetch user role
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', authData.user.id)
+          .single();
+
+        if (userError) {
+          console.error("Error fetching user role:", userError);
+          // Fallback to selected role if not in DB for now
+          setRole(selectedRole); 
+        } else if (userData) {
+          setRole(userData.role as AppRole);
+        }
+
+        // Fetch user profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', authData.user.id)
+          .single();
+
+        if (profileData) {
+          setProfile(profileData);
+        } else {
+           // Fallback profile
+           setProfile({
+            id: 'mock-profile',
+            user_id: authData.user.id,
+            full_name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+            phone: '+91 98765 43210',
+            language_pref: 'english',
+            created_at: new Date().toISOString(),
+          });
+        }
+        
+        const finalRole = userData?.role || selectedRole;
+        navigate(roleRedirects[finalRole as AppRole], { state: { userId: authData.user.id } });
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to login');
+      console.error(error);
+    } finally {
       setLoading(false);
-      navigate(roleRedirects[selectedRole]);
-    }, 800);
+    }
   };
 
   const handleGoogleLogin = async () => {
